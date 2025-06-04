@@ -126,7 +126,7 @@ class SiglipAttention(nn.Module):
         # [Batch_Size, Num_Head, Num_Patches, Head_Dim] -> [Batch_Size, Num_Patches, Embed_Dim]
         attn_output = attn_output.transpose(1, 2).contiguous().reshape(batch_size, seq_len, self.embed_dim)
         # [Batch_Size, Num_Patches, Embed_Dim]
-        # We do this so that each embedding from each head will contribute to the final output
+        # because we just concatenated the heads, we need to mix them back together so that all heads outputs will contribute to the final output
         attn_output = self.out_proj(attn_output) 
         return attn_output, atten_weights
     
