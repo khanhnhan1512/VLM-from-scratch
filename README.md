@@ -134,7 +134,7 @@ bash run_inference.sh
 
 ## Model Weights
 
-This implementation supports loading pre-trained PaliGemma weights. Place the model files in the `paligemma/` directory:
+This implementation supports loading pre-trained PaliGemma weights. You can download from [Gemma Model Hub](https://huggingface.co/google/paligemma-3b-pt-224). Place the model files in the `paligemma/` directory:
 - Configuration files (`config.json`, `tokenizer.json`, etc.)
 - Model weights (`model-*.safetensors`)
 
