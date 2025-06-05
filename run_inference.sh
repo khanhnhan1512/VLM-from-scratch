@@ -1,15 +1,15 @@
 #!/bin/bash
 
-MODEL_PATH="./paligemma"
-PROMPT="this building is "
-IMAGE_FILE_PATH="test_images/pic1.jpeg"
+MODEL_PATH="./paligemma/"
+PROMPT="The color of the car is "
+IMAGE_FILE_PATH="images/car.jpg"
 MAX_TOKENS_TO_GENERATE=100
 TEMPERATURE=0.8
 TOP_P=0.9
 DO_SAMPLE="False"
 ONLY_CPU="False"
 
-python inference.py \
+python run_inference.py \
     --model_path "$MODEL_PATH" \
     --prompt "$PROMPT" \
     --image_file_path "$IMAGE_FILE_PATH" \

@@ -33,8 +33,8 @@ class KVCache():
 class GemmaConfig():
     def __init__(self, vocab_size, hidden_size, intermediate_size, num_hidden_layers, num_attention_heads, num_key_value_heads,
                  head_dim=256, max_position_embeddings=8192, rms_norm_eps=1e-6, rope_theta=10000.0, attention_bias=False,
-                 attention_dropout=0.0, pad_token_id=None, **kwargs):
-        super().__init()
+         attention_dropout=0.0, pad_token_id=None, **kwargs):
+        super().__init__()
         self.vocab_size = vocab_size
         self.max_position_embeddings = max_position_embeddings
         self.hidden_size = hidden_size
@@ -100,13 +100,12 @@ class GemmaRotaryEmbedding(nn.Module):
         self.inv_freq.to(x.device)
         # copy the inv_freq tensor for batch in the sequence 
         # inv_freq_expanded: [bs, Head_Dim // 2, 1]
-        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)
-        # position_ids: [bns, seq_len]        
+        inv_freq_expanded = self.inv_freq[None, :, None].float().expand(position_ids.shape[0], -1, 1)        # position_ids: [bns, seq_len]        
         # position_ids_expanded: [bns, 1, seq_len]
         position_ids_expanded = position_ids[:, None, :].float()
         device_type = x.device.type
         device_type = device_type if isinstance(device_type, str) and device_type != "mps" else "cpu"
-        with torch.autograd(device_type=device_type, enabled=False):
+        with torch.autocast(device_type=device_type, enabled=True):
             # multiply each theta by the position (which is the argument of the sin and cos functions)
             # freqs: [Bs, Head_Dim // 2, 1] @ [Bs, 1, Seq_len] -> [Bs, Seq_len, Head_Dim // 2]
             freqs = torch.matmul(inv_freq_expanded.float(), position_ids_expanded.float()).transpose(1, 2)
@@ -143,7 +142,7 @@ class GemmaMLP(nn.Module):
 
     def forward(self, x):
         y = self.gate_proj(x) # [Bs, Seq_Len, Hidden_Size] -> [Bs, Seq_Len, Intermediate_Size]
-        y = torch.nn.functional.relu(y, approximate="tanh") # [Bs, Seq_Len, Intermediate_Size]
+        y = torch.nn.functional.gelu(y, approximate="tanh") # [Bs, Seq_Len, Intermediate_Size]
         j = self.up_proj(x) # [Bs, Seq_Len, Hidden_Size] -> [Bs, Seq_Len, Intermediate_Size]
         z = y * j # [Bs, Seq_Len, Intermediate_Size]
         z = self.down_proj(z) # [Bs, Seq_Len, Intermediate_Size] -> [Bs, Seq_Len, Hidden_Size]

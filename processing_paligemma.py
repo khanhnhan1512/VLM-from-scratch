@@ -51,7 +51,7 @@ def process_images(images: List[Image.Image], size: Dict[str, int] = None, resam
     return images
 
 
-class PaliGemmaProcess:
+class PaliGemmaProcessor:
     IMAGE_TOKEN = "<image>"
 
     def __init__(self, tokenizer, num_image_tokens: int, image_size: int):
